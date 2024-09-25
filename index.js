@@ -3,7 +3,7 @@ const express = require('express');
 const mongoose = require("mongoose");
 const cors = require("cors");
 const bodyParser = require('body-parser');
-
+const graphqlRouter = require('./Routes/graphql');
 require("dotenv").config();
 
 const {MONGO_URL,PORT} = process.env;
@@ -20,16 +20,17 @@ app.use(
       credentials: true, // Allows cookies and authentication info to be passed
     })
   );
-  mongoose
-  .connect(MONGO_URL)
+
+// Database Connection
+  mongoose.connect(MONGO_URL)
   .then(() => console.log("MongoDB is  connected successfully"))
   .catch((err) => console.error(err));
-app.get('/', (req, res) => {
-    res.send('Hello, World!');
-});
+
+  app.use('/', graphqlRouter);
+
+
 
 // Start the server
-const port = 3000;
-app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
+app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
 });
