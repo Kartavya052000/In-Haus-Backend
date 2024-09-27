@@ -1,19 +1,29 @@
-const User = require('../Models/User');
-const jwt = require('jsonwebtoken');
+const User = require("../Models/User");
+const jwt = require("jsonwebtoken");
+const bcrypt = require('bcryptjs');
 
+// SignUp Function
 exports.signup = async ({ username, email, password }) => {
   // Check if user exists
   const existingUser = await User.findOne({ email });
   if (existingUser) {
-    throw new Error('User already exists with this email.');
+    throw new Error("User already exists with this email.");
   }
 
   // Create new user
   const newUser = new User({ username, email, password });
   await newUser.save();
 
+  const secretKey = process.env.JWT_SECRET;
+
+  if (!secretKey) {
+    throw new Error('JWT secret is not defined.');
+  }
+
   // Generate JWT token
-  const token = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
+  const token = jwt.sign({ userId: newUser._id }, secretKey, {
+    expiresIn: "1d",
+  });
 
   return {
     id: newUser._id,
@@ -22,3 +32,58 @@ exports.signup = async ({ username, email, password }) => {
     token,
   };
 };
+
+
+// Login function
+exports.login = async ({ email, password }) => {
+
+  // Check if the user exists
+  const user = await User.findOne({ email });
+  if (!user) {
+    throw new Error('User not found with this email.');
+  }
+
+  // Compare provided password with stored hashed password
+  const isPasswordValid = await bcrypt.compare(password, user.password);
+  if (!isPasswordValid) {
+    throw new Error('Invalid password.');
+  }
+
+  const secretKey = process.env.JWT_SECRET;
+
+  if (!secretKey) {
+    throw new Error('JWT secret is not defined.');
+  }
+
+  // Generate JWT token
+  const token = jwt.sign({ userId: user._id }, secretKey, {
+    expiresIn: "1d",
+  });
+  
+  return {
+    id: user._id,
+    username: user.username,
+    email: user.email,
+    token,
+  };
+};
+
+// exports.getProfile = async (userId) => {
+//   try {
+//     // console.log('Received userId:', userId);
+
+//     // Fetch the user from the database by their ID
+//     const user = await User.findById(userId).select('-password'); // Exclude password
+
+//     if (!user) {
+//       // console.log('User not found for userId:', userId);
+//       throw new Error('User not found');
+//     }
+
+//     // console.log('User found:', user);
+//     return user;
+//   } catch (error) {
+//     console.error('Error in getProfile:', error); // Log any error that occurs
+//     throw error;
+//   }
+// };
