@@ -8,6 +8,10 @@ const typeDefs = `
     email: String!
     token: String
   }
+  
+  type ResponseMessage {
+    message: String!
+  }
 
   type Query {
     hello: String
@@ -17,6 +21,8 @@ const typeDefs = `
   type Mutation {
     signup(username: String!, email: String!, password: String!): User
     login(email: String!, password: String!): User
+    forgotPassword(email: String!): ResponseMessage  
+    resetPassword(resetToken: String!, newPassword: String!): ResponseMessage  
   }
 `;
 

@@ -1,6 +1,8 @@
 const User = require("../Models/User");
 const jwt = require("jsonwebtoken");
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
+
 
 // SignUp Function
 exports.signup = async ({ username, email, password }) => {
@@ -87,3 +89,55 @@ exports.login = async ({ email, password }) => {
 //     throw error;
 //   }
 // };
+
+
+// Forgot Password Function
+exports.forgotPassword = async (email) => {
+  // Check if user exists
+  const user = await User.findOne({ email });
+  if (!user) {
+    throw new Error('User not found with this email.');
+  }
+
+  // Generate a reset token
+  const resetToken = crypto.randomBytes(3).toString('hex');
+
+  // Hash reset token with expiration time (1 hour)
+  user.resetPasswordToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+  user.resetPasswordExpires = Date.now() + 3600000; // 1 hour expiration
+  await user.save();
+
+  // Log the reset token (Have to send in email)
+  console.log(`Password reset token for ${email}: ${resetToken}`);
+  
+  return {
+    message: 'Password reset token sent to email'
+  };
+};
+
+
+// Reset Password Function
+exports.resetPassword = async (resetToken, newPassword) => {
+  // Hash provided reset token 
+  const hashedToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+
+  // Find user by hashed reset token and check expiration
+  const user = await User.findOne({
+    resetPasswordToken: hashedToken,
+    resetPasswordExpires: { $gt: Date.now() },  // Check if token is valid 
+  });
+
+  if (!user) {
+    throw new Error('Token is invalid or has expired');
+  }
+
+  // Update user password
+  user.password = newPassword;
+  user.resetPasswordToken = undefined; // Clear reset token
+  user.resetPasswordExpires = undefined; // Clear expiration
+  await user.save();
+
+  return {
+    message: 'Password has been updated successfully'
+  };
+};
