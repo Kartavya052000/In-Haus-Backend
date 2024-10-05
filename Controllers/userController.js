@@ -2,6 +2,7 @@ const User = require("../Models/User");
 const jwt = require("jsonwebtoken");
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
+const nodemailer = require("nodemailer");
 
 
 // SignUp Function
@@ -108,8 +109,33 @@ exports.forgotPassword = async (email) => {
   await user.save();
 
   // Log the reset token (Have to send in email)
-  console.log(`Password reset token for ${email}: ${resetToken}`);
-  
+  // console.log(`Password reset token for ${email}: ${resetToken}`);
+
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: 'email@gmail.com', //Change this to actual email
+      pass: 'password', //Change this to actual password
+    },
+  });
+
+    const mailOptions = {
+    from: '"In-Haus" <email@gmail.com>', 
+    to: email,                                       
+    subject: 'Password Reset Request',               
+    text: `Your reset password token is ${resetToken}`,
+    html: `<p>Your reset token is: <strong>${resetToken}</strong></p>`, 
+  };
+
+   // Send email with the reset token
+   try {
+    await transporter.sendMail(mailOptions);
+    console.log(`Password reset token sent to ${email}`);
+  } catch (error) {
+    console.error('Error sending email:', error);
+    throw new Error('There was an error sending the email. Try again later.');
+  }
+
   return {
     message: 'Password reset token sent to email'
   };
