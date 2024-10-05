@@ -4,7 +4,14 @@ const userResolver = {
   Mutation: {
     signup: (_, args) => userController.signup(args),
     login: (_, args) => userController.login(args),
-    // Add other mutations like login here
+
+    forgotPassword: async (_, { email }) => {
+      return await userController.forgotPassword(email);
+    },
+
+    resetPassword: async (_, { resetToken, newPassword }) => {
+      return await userController.resetPassword(resetToken, newPassword);
+    },
 
     // Protected mutation
     
