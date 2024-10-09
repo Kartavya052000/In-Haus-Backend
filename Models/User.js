@@ -1,7 +1,10 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 
-const userSchema = new mongoose.Schema(
+// Destructure Schema from mongoose
+const { Schema } = mongoose;
+
+const userSchema = new Schema(
   {
     username: {
       type: String,
@@ -17,9 +20,12 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    groups: [{ type: Schema.Types.ObjectId, ref: 'Group' }],  // Field to store group IDs (optional)
+
     resetPasswordToken: String,  
     resetPasswordExpires: Date,  
   },
+
   {
     timestamps: true, 
   }

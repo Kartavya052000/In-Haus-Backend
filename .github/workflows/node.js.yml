@@ -28,11 +28,11 @@ jobs:
         cache: 'npm'
     - run: npm ci
     - run: |
-           touch .env
-           echo "PORT= ${{ secrets.PORT }}" >> .env
-           echo "MONGO_URL = ${{ secrets.MONGO_URL }}" >> .env
-           echo "TOKEN_KEY = ${{ secrets.JWT_SECRET }}" >> .env
-     - run: pm2 restart BackendAPI
+        touch .env
+        echo "PORT=${{ secrets.PORT }}" >> .env
+        echo "MONGO_URL=${{ secrets.MONGO_URL }}" >> .env
+        echo "TOKEN_KEY=${{ secrets.JWT_SECRET }}" >> .env
+    - run: pm2 restart BackendAPI
 
 
    

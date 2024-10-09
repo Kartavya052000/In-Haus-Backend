@@ -8,9 +8,9 @@ const authenticate = (req) => {
     throw new Error('Authorization header must be provided');
   }
 
-  const token = authHeader.split(' ')[1]; // Extract the token from 'Bearer <token>'
+  const token = authHeader; // Directly use the authHeader as token
   if (!token) {
-    throw new Error('Authorization token must be in the format: Bearer <token>');
+    throw new Error('Authorization token must be provided');
   }
 
   try {
