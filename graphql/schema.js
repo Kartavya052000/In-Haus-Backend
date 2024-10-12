@@ -34,8 +34,6 @@ type Group {
   updatedAt: String!
     createdBy: User!   # This also references the User type
   filteredTasks: [Task!]!  # Ensure this is included in the Group type
-
-
 }
 
 # Define the Reward type 
@@ -117,7 +115,7 @@ input UpdatedRewardInput {
     login(email: String!, password: String!): User
     forgotPassword(email: String!): ResponseMessage  
     resetPassword(resetToken: String!, newPassword: String!): ResponseMessage  
-    createTask(taskName: String!, startDate: String!, endDate: String!, repeat: String, assignedTo: ID!, points: Int!, type: String!): Task
+    createTask(taskName: String!, startDate: String!, repeat: String, assignedTo: ID!, points: Int!, type: String!): Task
    createGroup(groupName: String!, members: [ID!]!): Group  # Define createGroup mutation
     editTask(taskId: ID!, updatedTaskDetails: UpdatedTaskInput!): Task  # Define editTask mutation
     createReward(name: String!, pointsAssigned: Int!, expiryDate: String!, category: String!): Reward 
