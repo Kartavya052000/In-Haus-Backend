@@ -47,11 +47,11 @@ if (!createdByUser) {
         }
       },
 
-      findGroupById: async (groupId) => {
+      findGroupById: async (userId) => {
         try {
-      
-          // Step 1: Fetch the group by its ID
-          const group = await Group.findById(groupId).populate('members', 'id username');
+      const user = await User.findById(userId);
+      console.log(user,"UUUU")
+          const group = await Group.findById(user.groups[0]).populate('members', 'id username');
           if (!group) {
             throw new Error('Group not found');
           }

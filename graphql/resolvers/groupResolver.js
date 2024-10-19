@@ -34,9 +34,15 @@ const groupResolver = {
   Query: {
     hello: () => 'Hello world!',
     
-    getGroup: async (_, { groupId }) => {
+    getGroup: async (_, {  },context) => {
+      const user = context.user; // Get the authenticated user from context
+console.log(user,"user");
+if (!user || !user.userId) {
+  throw new Error("Unauthorized! You must be logged in to get a group.");
+}
         try {
-          const group = await groupController.findGroupById(groupId);
+          // const user 
+          const group = await groupController.findGroupById(user.userId);
           if (!group) {
             throw new Error('Group not found');
           }
@@ -45,31 +51,31 @@ const groupResolver = {
           throw new Error(error.message);
         }
       },
-      getUserTasksInGroup: async (_, { groupId, userId }) => {
-        // console.log("HITT"); // Check if the resolver is hit
+      getUserTasksInGroup: async (_, { groupId,userId }, context) => {
+        // Retrieve userId from context
+        // Debugging userId
         
         // Find the group by ID
-        const group = await groupController.findGroupById(groupId);
+        const group = await groupController.findGroupById(userId);
         if (!group) {
           throw new Error('Group not found');
         }
+      
         // Check if the user is a member of the group
-        const isMember = group.members.some(member => member.id === userId); // Accessing member.id
+        const isMember = group.members.some(member => member.id === userId);
         if (!isMember) {
-          throw new Error('Userr is not a member of this group');
+          throw new Error('User is not a member of this group');
         }
-  
+      
         // Fetch tasks assigned to the user in the specified group
         const tasks = await groupController.getUserTasksInGroup(groupId, userId);
-        // console.log("==",tasks.filteredTasks[0].assignedTo,"Tasks");
-        
-        // console.log(userId,"===",group)
-        // Find the username for the userId
+      
+        // Find the user object for the given userId from the group members
         const user = group.members.find(member => member.id === userId);
         if (!user) {
           throw new Error('User not found in the group');
         }
-  
+      
         // Return only the user details and their tasks
         return {
           id: userId,
@@ -81,12 +87,12 @@ const groupResolver = {
             endDate: task.endDate,
             assignedTo: {
               id: task.assignedTo.id.toString(),
-              // username: task.assignedTo.username,
+              // username: task.assignedTo.username, // Uncomment if needed
             },
           })),
         };
       },
-    
+      
         
   },
 };
