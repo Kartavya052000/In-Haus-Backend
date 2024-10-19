@@ -8,7 +8,7 @@ const taskController = {
       const newTask = new Task({
         taskName: taskDetails.taskName,
         startDate: taskDetails.startDate,
-        // endDate: taskDetails.endDate,
+        endDate: taskDetails.endDate,
         repeat: taskDetails.repeat,
         assignedTo: taskDetails.assignedTo,
         points: taskDetails.points,
@@ -46,6 +46,7 @@ const taskController = {
     }
   },
   getTask: async (taskId) => {
+    console.log("HITT")
     try {
       const task = await Task.findById(taskId);
       if (!task) {

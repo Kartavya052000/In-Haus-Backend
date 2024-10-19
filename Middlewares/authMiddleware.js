@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 // Middleware to verify JWT and pass user information to GraphQL context
 const authenticate = (req) => {
   const authHeader = req.headers.authorization;
+  console.log(req.headers.authorization)
 
   if (!authHeader) {
     throw new Error('Authorization header must be provided');

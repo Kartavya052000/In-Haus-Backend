@@ -16,6 +16,9 @@ const taskSchema = new mongoose.Schema({
   repeat: {
     type: String,
   },
+  description:{
+    type:String
+  },
   assignedTo: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User', // Ensure this references the User model

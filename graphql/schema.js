@@ -57,8 +57,8 @@ type UserTasksResponse {
 
     type Query {
     hello: String!  # Add hello query here
-      getGroup(groupId: ID!): Group  # Query to get a group by its ID
-  getUserTasksInGroup(groupId: ID!, userId: ID!): UserTasksResponse  # Correct response type
+      getGroup(groupId: ID): Group  # Query to get a group by its ID
+  getUserTasksInGroup(groupId: ID!,userId: ID!): UserTasksResponse  # Correct response type
   getTask(taskId: ID!) : Task
   getPoints(userId: ID!): UserPoints
   getReward(rewardId: ID!): Reward
@@ -115,7 +115,7 @@ input UpdatedRewardInput {
     login(email: String!, password: String!): User
     forgotPassword(email: String!): ResponseMessage  
     resetPassword(resetToken: String!, newPassword: String!): ResponseMessage  
-    createTask(taskName: String!, startDate: String!, repeat: String, assignedTo: ID!, points: Int!, type: String!): Task
+    createTask(taskName: String!, startDate: String!,endDate: String!, repeat: String, assignedTo: ID!, points: Int,description:String, type: String!): Task
    createGroup(groupName: String!, members: [ID!]!): Group  # Define createGroup mutation
     editTask(taskId: ID!, updatedTaskDetails: UpdatedTaskInput!): Task  # Define editTask mutation
     createReward(name: String!, pointsAssigned: Int!, expiryDate: String!, category: String!): Reward 

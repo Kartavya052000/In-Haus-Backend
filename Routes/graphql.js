@@ -13,6 +13,8 @@ router.all(
     context: (req) => {
       let user = null;
       try {
+        // console.log(req.headers.authorization);
+        
         // Only authenticate if Authorization header is present
         if (req.headers.authorization) {
           user = authenticate(req); // Verify JWT and get user info

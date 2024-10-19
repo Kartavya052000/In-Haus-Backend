@@ -40,7 +40,7 @@ const taskResolver = {
         
             // Fetch tasks for a specific group
          getTask: async (_, { taskId }) => {
-          // console.log("HITTT")
+          console.log("HITTT")
           try {
             const group = await taskController.getTask(taskId);
             if (!group) {
