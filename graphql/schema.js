@@ -42,7 +42,7 @@ type Reward {
   name: String!
   pointsAssigned: Int!
   expiryDate: String!
-    assignedTo: User!  # This references the User type
+  assignedTo: User!  # This references the User type
   category: String!
   createdBy: User!
 }
@@ -58,7 +58,7 @@ type UserTasksResponse {
 
     type Query {
     hello: String!  # Add hello query here
-      getGroup(groupId: ID): Group  # Query to get a group by its ID
+   getGroup(groupId: ID): Group  # Query to get a group by its ID
   getUserTasksInGroup(groupId: ID!,userId: ID!): UserTasksResponse  # Correct response type
   getTask(taskId: ID!) : Task
   getPoints(userId: ID!): UserPoints
@@ -123,7 +123,7 @@ input UpdatedRewardInput {
     createReward(name: String!, pointsAssigned: Int!, expiryDate: String!,assignedTo:ID! category: String!): Reward 
     editReward(rewardId: ID!, updatedRewardDetails: UpdatedRewardInput!): Reward  # Mutation to edit a reward
     testMutation: String
-    redeemReward(rewardId: ID!): [Reward]
+    redeemReward(rewardId: ID!): Reward
     completeTask(taskId: ID!) :Task
   }
 `;  

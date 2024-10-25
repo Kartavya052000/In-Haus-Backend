@@ -158,7 +158,7 @@ reward.redeemed = true
 
       // not this
       // await Reward.findByIdAndDelete(rewardId);
-console.log(reward);
+console.log(reward,"REWARD");
 return reward
       // return {
       //   message: "Reward redeemed successfully",
