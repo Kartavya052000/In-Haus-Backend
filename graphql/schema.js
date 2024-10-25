@@ -42,6 +42,7 @@ type Reward {
   name: String!
   pointsAssigned: Int!
   expiryDate: String!
+    assignedTo: User!  # This references the User type
   category: String!
   createdBy: User!
 }
@@ -62,7 +63,8 @@ type UserTasksResponse {
   getTask(taskId: ID!) : Task
   getPoints(userId: ID!): UserPoints
   getReward(rewardId: ID!): Reward
-  getRedeemedRewards(userId: ID!): [RedeemedReward!]!
+  getRedeemedRewards: [Reward!]!
+  getUserRewardList: [Reward!]! # Correctly defined as returning an array of non-nullable Reward types
   
   }
   
@@ -118,12 +120,13 @@ input UpdatedRewardInput {
     createTask(taskName: String!, startDate: String!,endDate: String!, repeat: String, assignedTo: ID!, points: Int,description:String, type: String!): Task
    createGroup(groupName: String!, members: [ID!]!): Group  # Define createGroup mutation
     editTask(taskId: ID!, updatedTaskDetails: UpdatedTaskInput!): Task  # Define editTask mutation
-    createReward(name: String!, pointsAssigned: Int!, expiryDate: String!, category: String!): Reward 
+    createReward(name: String!, pointsAssigned: Int!, expiryDate: String!,assignedTo:ID! category: String!): Reward 
     editReward(rewardId: ID!, updatedRewardDetails: UpdatedRewardInput!): Reward  # Mutation to edit a reward
     testMutation: String
-    redeemReward(rewardId: ID!, userId: ID!): RedeemRewardResponse
+    redeemReward(rewardId: ID!): [Reward]
+    completeTask(taskId: ID!) :Task
   }
-`;
+`;  
 
 // Merge userResolver and taskResolver
 const resolvers = {

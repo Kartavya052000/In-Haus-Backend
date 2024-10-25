@@ -70,7 +70,8 @@ exports.login = async ({ email, password }) => {
     email: user.email,
     points: user.points, 
     token,
-    groups:user.groups
+    groups:user.groups,
+    points:user.points
   };
 };
 

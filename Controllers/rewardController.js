@@ -12,19 +12,25 @@ const rewardController = {
         expiryDate: rewardDetails.expiryDate,
         category: rewardDetails.category,
         createdBy: rewardDetails.createdBy,
+        assignedTo:rewardDetails.assignedTo
       });
 
       const savedReward = await newReward.save();
 
       // Populate createdBy with user details
+      const assignedUser = await User.findById(rewardDetails.assignedTo).select('id username');
       const createdByUser = await User.findById(savedReward.createdBy).select('id username');
-
+console.log(assignedUser,"assigned")
       // Format the expiry date
       const formattedExpiryDate = new Date(savedReward.expiryDate).toISOString();
 
       return {
         ...savedReward._doc,
         id: savedReward._id.toString(),
+        assignedTo: {
+          id: assignedUser._id.toString(),
+          username: assignedUser.username,
+        },
         createdBy: {
           id: createdByUser._id.toString(),
           username: createdByUser.username,
@@ -143,32 +149,56 @@ const rewardController = {
 
       // Deduct points and add the reward details into the user's redeemedRewards
       user.points -= reward.pointsAssigned;
-
-      // Push reward details into redeemedRewards
-      user.redeemedRewards.push({
-        rewardId: reward._id,                 // Reward ID as ObjectId
-        name: reward.name,                    // Reward name
-        pointsAssigned: reward.pointsAssigned, // Points assigned to the reward
-        category: reward.category,            // Reward category
-        redeemedAt: new Date(),               // Current timestamp
-      });
-
+   
+// redeem status
+reward.redeemed = true
       // Save the updated user
       await user.save();
+      await reward.save()
 
-      await Reward.findByIdAndDelete(rewardId);
-
-      return {
-        message: "Reward redeemed successfully",
-        userId: user._id,
-        updatedPoints: user.points,
-        redeemedRewards: user.redeemedRewards,
-      };
+      // not this
+      // await Reward.findByIdAndDelete(rewardId);
+console.log(reward);
+return reward
+      // return {
+      //   message: "Reward redeemed successfully",
+      //   userId: user._id,
+      //   updatedPoints: user.points,
+      //   redeemedRewards: user.redeemedRewards,
+      // };
     } catch (error) {
       console.error("Error in redeemReward:", error);
       throw new Error(error.message);
     }
   },
+// Get User rewards by id 
+// Get All Redeemed Rewards
+rewardsList: async (userId) => {
+  try {
+    // Fetch the user's points
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    // Find rewards assigned to the userId where redeemed is false and pointsAssigned is less than the user's points
+    const rewards = await Reward.find({
+      assignedTo: userId,
+      redeemed: false,
+      pointsAssigned: { $lte: user.points } // Compare reward points with user's points
+    });
+
+    if (!rewards || rewards.length === 0) {
+      return []
+      // throw new Error("No eligible rewards found");
+    }
+console.log(rewards,"Controller")
+    return rewards; // Return the filtered list of rewards
+  } catch (error) {
+    console.error("Error fetching rewards:", error);
+    throw new Error(error.message);
+  }
+},
 
   // Get All Redeemed Rewards
   getRedeemedRewards: async (userId) => {
@@ -179,8 +209,17 @@ const rewardController = {
         throw new Error("User not found");
       }
 
+      const rewards = await Reward.find({
+        assignedTo: userId,
+        redeemed: true,
+      });
+  
+      if (!rewards || rewards.length === 0) {
+        return []; // Return an empty array if no eligible rewards found
+      }
+      return  rewards;
       // Return the redeemedRewards array from the user object
-      return user.redeemedRewards;
+      // return user.redeemedRewards;
     } catch (error) {
       console.error("Error fetching redeemed rewards:", error);
       throw new Error(error.message);

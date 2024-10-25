@@ -1,5 +1,5 @@
 const rewardController = require('../../Controllers/rewardController');
-
+const  userController = require('../../Controllers/userController');
 const rewardResolver = {
   Query: {
     getPoints: async (_, { userId }) => {
@@ -16,9 +16,48 @@ const rewardResolver = {
         throw new Error(error.message);
       }
     },
-    getRedeemedRewards: async (_, { userId }) => {
+    getUserRewardList: async (_,args, context) => {
+      const user = context.user;
+    
+      if (!user || !user.userId) {
+        throw new Error("Unauthorized! You must be logged in to get the reward list.");
+      }
+    
       try {
-        return await rewardController.getRedeemedRewards(userId);
+        const rewards = await rewardController.rewardsList(user.userId);
+    // console.log(rewards,"RRRRR")
+        if (!rewards || rewards.length === 0) {
+          return []; // Return an empty array if no rewards found
+        }
+    // return rewards
+        return rewards.map(reward => {
+          // Debugging: Check each reward object before returning
+          console.log(reward, "Current reward object.");
+    
+          return {
+            id: reward._id.toString(),  // Convert ObjectId to string
+            name: reward.name,
+            pointsAssigned: Number(reward.pointsAssigned),
+            expiryDate: reward.expiryDate,
+            category: reward.category,
+            assignedTo: {
+              id: reward.assignedTo.toString(),  // Convert ObjectId to string
+            },
+          };
+        });
+      } catch (error) {
+        throw new Error(error.message);
+      }
+    },    
+    getRedeemedRewards: async (_, {  },context) => {
+      const user = context.user;
+    
+      if (!user || !user.userId) {
+        throw new Error("Unauthorized! You must be logged in to get the reward list.");
+      }
+    
+      try {
+        return await rewardController.getRedeemedRewards(user.userId);
       } catch (error) {
         console.error("Error fetching redeemed rewards:", error);
         throw new Error(error.message);
@@ -42,6 +81,7 @@ const rewardResolver = {
           expiryDate: args.expiryDate,
           category: args.category,
           createdBy: user.userId, 
+          assignedTo:args.assignedTo
         };
 
         const createdReward = await rewardController.createReward(rewardArgs);
@@ -51,8 +91,13 @@ const rewardResolver = {
         throw new Error('Failed to create reward.');
       }
     },
-    redeemReward: async (_, { rewardId, userId }) => {
-      return rewardController.redeemReward(rewardId, userId);
+    redeemReward: async (_, { rewardId, },context) => {
+      const user = context.user;
+    
+      if (!user || !user.userId) {
+        throw new Error("Unauthorized! You must be logged in to get the reward list.");
+      }
+      return rewardController.redeemReward(rewardId, user.userId);
     },
 
     // Edit reward mutation

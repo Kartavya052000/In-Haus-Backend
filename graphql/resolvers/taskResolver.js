@@ -24,8 +24,6 @@ const taskResolver = {
       },
       editTask: async (_, { taskId, updatedTaskDetails }, context) => {
         const user = context.user;
-        // Optionally, check if the user has permission to edit the task
-  
         if (!user || !user.userId) {
           throw new Error("Unauthorized! You must be logged in to edit a task.");
         }
@@ -33,6 +31,14 @@ const taskResolver = {
         // Call the editTask method from taskController
         const updatedTask = await taskController.editTask(taskId, updatedTaskDetails);
         return updatedTask; // Return the updated task
+      },
+      completeTask: async(_,{taskId},context)=>{
+        const user = context.user;
+        if (!user || !user.userId) {
+          throw new Error("Unauthorized! You must be logged in to edit a task.");
+        }
+        const taskComplete = await taskController.taskComplete(taskId);
+        return taskComplete;
       }
     },
     Query: {

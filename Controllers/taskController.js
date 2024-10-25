@@ -125,6 +125,50 @@ const taskController = {
       throw new Error('Error editing task: ' + error.message);
     }
   },
+  taskComplete: async (taskId) => {
+    console.log(taskId, "TASKKKKKIDDDDD");
+    try {
+      // Find the task by ID
+      const task = await Task.findById(taskId);
+      if (!task) {
+        throw new Error("Task not found");
+      }
+  
+      // Update task status to 'completed'
+      task.taskStatus = "completed";
+      await task.save(); // Ensure the update is saved to the database
+  
+      // Retrieve the user assigned to this task
+      const user = await User.findById(task.assignedTo);
+      if (!user) {
+        throw new Error("User not found");
+      }
+  
+      // Increase the user's points by the task's points
+      user.points = (user.points || 0) + task.points;
+      await user.save(); // Save the updated user points
+  
+      // Convert ObjectId fields to strings for GraphQL compatibility
+      const taskWithStringIds = {
+        ...task._doc,
+        id: task._id.toString(),
+        assignedTo: {
+          id: user._id.toString(),
+          username: user.username,
+          points: user.points, // Include updated user points
+        },
+      };
+  
+      console.log(taskWithStringIds, "TASSKKK");
+      return taskWithStringIds;
+  
+    } catch (error) {
+      console.error("Error completing task:", error);
+      throw error;
+    }
+  }
+  
+  
 };
 
 

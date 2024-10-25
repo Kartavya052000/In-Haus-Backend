@@ -36,6 +36,11 @@ const taskSchema = new mongoose.Schema({
     ref: 'User', // Ensure this references the User model
     required: true,
   },
+  taskStatus: {
+    type: String,
+    enum: ['in_progress', 'completed'], // Restrict taskStatus to these values
+    default: 'in_progress', // Set default to 'in_progress'
+  },
 });
 
 const Task = mongoose.model('Task', taskSchema);

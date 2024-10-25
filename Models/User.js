@@ -24,13 +24,13 @@ const userSchema = new Schema(
       type: Number,
       default: 0,  // Default points value is 0
     },
-    redeemedRewards: [{
-      rewardId: { type: Schema.Types.ObjectId, ref: 'Reward' },
-      name: { type: String, required: true },                
-      pointsAssigned: { type: Number, required: true },           
-      category: { type: String, required: true }, 
-      redeemedAt: { type: Date, default: Date.now }
-    }],
+    // redeemedRewards: [{
+    //   rewardId: { type: Schema.Types.ObjectId, ref: 'Reward' },
+    //   name: { type: String, required: true },                
+    //   pointsAssigned: { type: Number, required: true },           
+    //   category: { type: String, required: true }, 
+    //   redeemedAt: { type: Date, default: Date.now }
+    // }],
     groups: [{ type: Schema.Types.ObjectId, ref: 'Group' }],  // Field to store group IDs (optional)
 
     resetPasswordToken: String,  

@@ -13,6 +13,11 @@ const rewardSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
+  assignedTo: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User', // Ensure this references the User model
+    required: true,
+  },
   category: {
     type: String,
     required: true,
@@ -22,6 +27,11 @@ const rewardSchema = new mongoose.Schema({
     ref: 'User', // Ensure this references the User model
     required: true,
   },
+  redeemed: {
+    type: Boolean,
+    default: false, // Set default to false if it hasn't been redeemed yet
+    required: true,
+  }
 });
 
 const Reward = mongoose.model('Reward', rewardSchema);
