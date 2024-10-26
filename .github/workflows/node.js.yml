@@ -31,7 +31,7 @@ jobs:
         touch .env
         echo "PORT=${{ secrets.PORT }}" >> .env
         echo "MONGO_URL=${{ secrets.MONGO_URL }}" >> .env
-        echo "TOKEN_KEY=${{ secrets.JWT_SECRET }}" >> .env
+        echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
     - run: pm2 restart BackendAPI
 
 

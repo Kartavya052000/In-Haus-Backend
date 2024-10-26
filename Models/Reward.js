@@ -1,33 +1,24 @@
 const mongoose = require('mongoose');
 
-const taskSchema = new mongoose.Schema({
-  taskName: {
+const rewardSchema = new mongoose.Schema({
+  name: {
     type: String,
     required: true,
   },
-  startDate: {
-    type: Date,
+  pointsAssigned: {
+    type: Number,
     required: true,
   },
-  endDate: {
+  expiryDate: {
     type: Date,
     required: true,
-  },
-  repeat: {
-    type: String,
-  },
-  description:{
-    type:String
   },
   assignedTo: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User', // Ensure this references the User model
     required: true,
   },
-  points: {
-    type: Number,
-  },
-  type: {
+  category: {
     type: String,
     required: true,
   },
@@ -36,12 +27,12 @@ const taskSchema = new mongoose.Schema({
     ref: 'User', // Ensure this references the User model
     required: true,
   },
-  taskStatus: {
-    type: String,
-    enum: ['in_progress', 'completed'], // Restrict taskStatus to these values
-    default: 'in_progress', // Set default to 'in_progress'
-  },
+  redeemed: {
+    type: Boolean,
+    default: false, // Set default to false if it hasn't been redeemed yet
+    required: true,
+  }
 });
 
-const Task = mongoose.model('Task', taskSchema);
-module.exports = Task;
+const Reward = mongoose.model('Reward', rewardSchema);
+module.exports = Reward;

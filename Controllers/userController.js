@@ -32,6 +32,7 @@ exports.signup = async ({ username, email, password }) => {
     id: newUser._id,
     username: newUser.username,
     email: newUser.email,
+    points: newUser.points,
     token,
   };
 };
@@ -67,7 +68,10 @@ exports.login = async ({ email, password }) => {
     id: user._id,
     username: user.username,
     email: user.email,
+    points: user.points, 
     token,
+    groups:user.groups,
+    points:user.points
   };
 };
 

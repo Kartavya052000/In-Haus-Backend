@@ -47,11 +47,11 @@ if (!createdByUser) {
         }
       },
 
-      findGroupById: async (groupId) => {
+      findGroupById: async (userId) => {
         try {
-      
-          // Step 1: Fetch the group by its ID
-          const group = await Group.findById(groupId).populate('members', 'id username');
+      const user = await User.findById(userId);
+      console.log(user,"UUUU")
+          const group = await Group.findById(user.groups[0]).populate('members', 'id username');
           if (!group) {
             throw new Error('Group not found');
           }
@@ -98,25 +98,25 @@ if (!createdByUser) {
       },
       getUserTasksInGroup: async (groupId, userId) => {
         // Find the group by ID
-        console.log("HITT@");
-        
         const group = await Group.findById(groupId);
         if (!group) {
           throw new Error('Group not found');
         }
-    console.log(group,userId)
+      
         // Check if the user is a member of the group
         const isMember = group.members.some(member => member.toString() === userId);
         if (!isMember) {
-          throw new Error('UserC is not a member of this group');
+          throw new Error('User is not a member of this group');
         }
-    
-        // Fetch tasks assigned to the user in the specified group
+      
+        // Fetch tasks assigned to the user in the specified group with taskStatus "completed"
         const tasks = await Task.find({
           assignedTo: userId,
           createdBy: group.createdBy, // Optional: ensure the task was created in the group
+          taskStatus: "in_progress"     // Only get tasks that are completed
         });
-    // console.log(tasks,"INNN")
+        console.log("Filtered Tasks:", tasks); // Log fetched tasks to verify filtering
+
         // Return the user details and their tasks
         return {
           id: userId,
@@ -133,6 +133,7 @@ if (!createdByUser) {
           })),
         };
       },
+      
     }
 
 module.exports = groupController;
