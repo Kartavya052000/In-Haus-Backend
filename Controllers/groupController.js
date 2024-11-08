@@ -47,7 +47,8 @@ if (!createdByUser) {
         }
       },
 
-      findGroupById: async (userId) => {
+      findGroupById: async (userId,data) => {
+        console.log(data)
         try {
       const user = await User.findById(userId);
       console.log(user,"UUUU")
@@ -60,9 +61,21 @@ if (!createdByUser) {
       
           // Step 2: Extract the createdBy (group admin)
           const groupAdminId = group.createdBy;
+          let tasksQuery = { createdBy: groupAdminId };
+
+          // If startDate is provided, filter tasks based on that date
+          if (data?.startDate) {
+            const startOfDay = new Date(data.startDate);
+            startOfDay.setUTCHours(0, 0, 0, 0);
       
+            const endOfDay = new Date(data.startDate);
+            endOfDay.setUTCHours(23, 59, 59, 999);
+      
+            tasksQuery.startDate = { $gte: startOfDay, $lte: endOfDay };
+          }
           // Step 3: Fetch tasks that were created by this group admin
-          const tasks = await Task.find({ createdBy: groupAdminId }).populate('assignedTo', 'id username');
+          // const tasks = await Task.find({ createdBy: groupAdminId }).populate('assignedTo', 'id username');
+          const tasks = await Task.find(tasksQuery).populate('assignedTo', 'id username');
 
           // Step 4: Filter tasks based on the assignedTo group members
           const groupMemberIds = group.members.map(member => member._id.toString());
@@ -97,7 +110,7 @@ if (!createdByUser) {
           throw new Error('Failed to fetch tasks: ' + error.message);
         }
       },
-      getUserTasksInGroup: async (groupId, userId) => {
+      getUserTasksInGroup: async (groupId, userId,startDate) => {
         // Find the group by ID
         const group = await Group.findById(groupId);
         if (!group) {
@@ -109,13 +122,26 @@ if (!createdByUser) {
         if (!isMember) {
           throw new Error('User is not a member of this group');
         }
-      
+        // Define the base query for tasks
+  const taskQuery = {
+    assignedTo: userId,
+    createdBy: group.createdBy, // Optional: ensure the task was created in the group
+    taskStatus: "in_progress",  // Only get tasks that are in progress
+  };
+
+  // If a startDate is provided, add it to the query as a range
+  if (startDate) {
+    const startOfDay = new Date(startDate);
+    startOfDay.setUTCHours(0, 0, 0, 0);
+
+    const endOfDay = new Date(startDate);
+    endOfDay.setUTCHours(23, 59, 59, 999);
+
+    taskQuery.startDate = { $gte: startOfDay, $lte: endOfDay };
+  }
         // Fetch tasks assigned to the user in the specified group with taskStatus "completed"
-        const tasks = await Task.find({
-          assignedTo: userId,
-          createdBy: group.createdBy, // Optional: ensure the task was created in the group
-          taskStatus: "in_progress"     // Only get tasks that are completed
-        });
+        const tasks = await Task.find(taskQuery).populate('assignedTo', 'id username');
+
         console.log("Filtered Tasks:", tasks); // Log fetched tasks to verify filtering
 
         // Return the user details and their tasks

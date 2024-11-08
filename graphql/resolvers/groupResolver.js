@@ -34,15 +34,15 @@ const groupResolver = {
   Query: {
     hello: () => 'Hello world!',
     
-    getGroup: async (_, {  },context) => {
+    getGroup: async (_,args,context) => {
       const user = context.user; // Get the authenticated user from context
-console.log(user,"user");
+// console.log(user,"usereeeeeee");
 if (!user || !user.userId) {
   throw new Error("Unauthorized! You must be logged in to get a group.");
 }
         try {
           // const user 
-          const group = await groupController.findGroupById(user.userId);
+          const group = await groupController.findGroupById(user.userId,args);
           if (!group) {
             throw new Error('Group not found');
           }
@@ -51,7 +51,7 @@ if (!user || !user.userId) {
           throw new Error(error.message);
         }
       },
-      getUserTasksInGroup: async (_, { groupId,userId }, context) => {
+      getUserTasksInGroup: async (_, { groupId,userId,startDate }, context) => {
         // Retrieve userId from context
         // Debugging userId
         
@@ -68,7 +68,7 @@ if (!user || !user.userId) {
         }
       
         // Fetch tasks assigned to the user in the specified group
-        const tasks = await groupController.getUserTasksInGroup(groupId, userId);
+        const tasks = await groupController.getUserTasksInGroup(groupId, userId,startDate);
       
         // Find the user object for the given userId from the group members
         const user = group.members.find(member => member.id === userId);
