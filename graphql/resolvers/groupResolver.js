@@ -85,6 +85,8 @@ if (!user || !user.userId) {
             taskName: task.taskName,
             startDate: task.startDate,
             endDate: task.endDate,
+            points:task.points,
+            category: task.category,
             assignedTo: {
               id: task.assignedTo.id.toString(),
               // username: task.assignedTo.username, // Uncomment if needed
@@ -92,6 +94,49 @@ if (!user || !user.userId) {
           })),
         };
       },
+      getMyTasksInGroup:async(_,{},context) => {
+        const User = context.user; // Get the authenticated user from context
+        console.log(User,"user");
+        if (!User || !User.userId) {
+          throw new Error("Unauthorized! You must be logged in to get a group.");
+        }
+        const group = await groupController.findGroupById(User.userId);
+        if (!group) {
+          throw new Error('Group not found');
+        }
+         // Check if the user is a member of the group
+         const isMember = group.members.some(member => member.id === User.userId);
+         if (!isMember) {
+           throw new Error('User is not a member of this group');
+         }
+
+               
+        // Fetch tasks assigned to the user in the specified group
+        const tasks = await groupController.getMyUserTasksInGroup(User.userId);
+           // Find the user object for the given userId from the group members
+           const user = group.members.find(member => member.id === User.userId);
+           if (!user) {
+             throw new Error('User not found in the group');
+           }
+         
+           // Return only the user details and their tasks
+           return {
+             id: User.userId,
+             username: user.username, // Get username directly from the user object
+             filteredTasks: tasks.filteredTasks.map(task => ({
+               id: task.id.toString(),
+               taskName: task.taskName,
+               startDate: task.startDate,
+               endDate: task.endDate,
+               points:task.points,
+               category: task.category,
+               assignedTo: {
+                 id: task.assignedTo.id.toString(),
+                 // username: task.assignedTo.username, // Uncomment if needed
+               },
+             })),
+           };
+      }
       
         
   },

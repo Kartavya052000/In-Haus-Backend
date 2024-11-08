@@ -128,6 +128,7 @@ if (!createdByUser) {
             startDate: task.startDate.toISOString(),
             endDate: task.endDate.toISOString(),
             category: task.category,
+            points: task.points,
             assignedTo: {
               id: task.assignedTo._id.toString(),
               username: task.assignedTo.username,
@@ -135,7 +136,48 @@ if (!createdByUser) {
           })),
         };
       },
+      getMyUserTasksInGroup: async (userId) => {
+        // Find the group by ID
+        const user = await User.findById(userId);
+      //  user.
+// let us take user can have only one group
+        const group = await Group.findById(user.groups[0]);
+        if (!group) {
+          throw new Error('Group not found');
+        }
       
+        // Check if the user is a member of the group
+        const isMember = group.members.some(member => member.toString() === userId);
+        if (!isMember) {
+          throw new Error('User is not a member of this group');
+        }
+      
+        // Fetch tasks assigned to the user in the specified group with taskStatus "completed"
+        const tasks = await Task.find({
+          assignedTo: userId,
+          createdBy: group.createdBy, // Optional: ensure the task was created in the group
+          taskStatus: "in_progress"     // Only get tasks that are completed
+        });
+        console.log("Filtered Tasks:", tasks); // Log fetched tasks to verify filtering
+
+        // Return the user details and their tasks
+        return {
+          id: userId,
+          username: tasks.length > 0 ? tasks[0].assignedTo.username : null, // Get username from tasks
+          filteredTasks: tasks.map(task => ({
+            id: task._id.toString(),
+            taskName: task.taskName,
+            startDate: task.startDate.toISOString(),
+            endDate: task.endDate.toISOString(),
+            category: task.category,
+            points: task.points,
+            assignedTo: {
+              id: task.assignedTo._id.toString(),
+              username: task.assignedTo.username,
+            },
+          })),
+        };
+      },
     }
 
 module.exports = groupController;

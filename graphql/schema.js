@@ -137,6 +137,7 @@ type MealPlanItem {
     hello: String!  # Add hello query here
    getGroup(groupId: ID): Group  # Query to get a group by its ID
   getUserTasksInGroup(groupId: ID!,userId: ID!): UserTasksResponse  # Correct response type
+  getMyTasksInGroup:UserTasksResponse
   getTask(taskId: ID!) : Task
   getPoints(userId: ID!): UserPoints
   getReward(rewardId: ID!): Reward
