@@ -89,6 +89,7 @@ if (!createdByUser) {
               },
               points: task.points,
               type: task.type,
+              category: task.category
             })),
           };
         } catch (error) {
@@ -126,6 +127,7 @@ if (!createdByUser) {
             taskName: task.taskName,
             startDate: task.startDate.toISOString(),
             endDate: task.endDate.toISOString(),
+            category: task.category,
             assignedTo: {
               id: task.assignedTo._id.toString(),
               username: task.assignedTo.username,
