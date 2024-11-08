@@ -41,6 +41,10 @@ const taskSchema = new mongoose.Schema({
     enum: ['in_progress', 'completed'], // Restrict taskStatus to these values
     default: 'in_progress', // Set default to 'in_progress'
   },
+  category:{
+    type: String,
+    required: true,
+  }
 });
 
 const Task = mongoose.model('Task', taskSchema);

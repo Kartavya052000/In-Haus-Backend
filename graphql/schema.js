@@ -27,6 +27,7 @@ const typeDefs = `
     assignedTo: User!  # This references the User type
     points: Int
     type: String
+    category:String
     createdBy: User!   # This also references the User type
   }
 
@@ -260,7 +261,7 @@ input UpdatedRewardInput {
     login(email: String!, password: String!): User
     forgotPassword(email: String!): ResponseMessage  
     resetPassword(resetToken: String!, newPassword: String!): ResponseMessage  
-    createTask(taskName: String!, startDate: String!,endDate: String!, repeat: String, assignedTo: ID!, points: Int,description:String, type: String!): Task
+    createTask(taskName: String!, startDate: String!,endDate: String!, repeat: String, assignedTo: ID!, points: Int,description:String, type: String!,category : String!): Task
    createGroup(groupName: String!, members: [ID!]!): Group  # Define createGroup mutation
     editTask(taskId: ID!, updatedTaskDetails: UpdatedTaskInput!): Task  # Define editTask mutation
     createReward(name: String!, pointsAssigned: Int!, expiryDate: String!,assignedTo:ID! category: String!): Reward 
