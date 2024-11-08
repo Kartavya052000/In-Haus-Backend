@@ -43,6 +43,7 @@ const userSchema = new Schema(
       required: function () {
         return this.provider === "google"; // Require for 'google' provider
       }
+
     },
     // redeemedRewards: [{
     //   rewardId: { type: Schema.Types.ObjectId, ref: 'Reward' },

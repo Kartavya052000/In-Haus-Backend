@@ -4,6 +4,10 @@ const taskResolver = require('./resolvers/taskResolver');
 const groupResolver = require('./resolvers/groupResolver');
 const rewardResolver = require('./resolvers/rewardResolver');
 
+const mealResolver = require('./resolvers/mealResolver');
+const recipeResolver = require('./resolvers/recipeResolver');
+
+
 // Define all types including User and Task-related ones
 const typeDefs = `
   type User {
@@ -54,6 +58,78 @@ type UserTasksResponse {
   filteredTasks: [Task!]!  # List of tasks assigned to the user
 }
 
+  type Step {
+    number: Int
+    step: String
+  }
+
+type Recipe {
+    _id: ID!
+    id: String
+    title: String
+    image: String
+    summary: String
+    readyInMinutes: String
+    healthScore: String
+    cuisines: [String]
+    servings: String
+    instructions: String
+    steps: [Step]
+    ingredients: [Ingredient]
+  }
+
+ type Ingredient {
+    id: Int
+    amount: Float
+    unit: String
+    unitLong: String
+    unitShort: String
+    aisle: String
+    name: String
+    original: String
+    originalName: String
+    meta: [String]
+    extendedName: String
+    image: String
+  }
+
+  type Meal {
+    id: Int
+    title: String
+    usedIngredientCount: Int
+    missedIngredientCount: Int
+    missedIngredients: [Ingredient]
+    usedIngredients: [Ingredient]
+    unusedIngredients: [Ingredient]
+    likes: Int
+    image: String
+    imageType: String
+  }
+
+type MealsByCuisine {
+  mealStyle: String
+  cuisine: String
+  meals: [Meal]
+  offset: Int
+  number: Int
+  totalResults: Int
+}
+
+type MealPlanItem {
+    date: String
+    mealId: String
+    mealTitle: String
+    mealType: String
+    image: String
+    servings: Int
+  }
+
+  type MealPlan {
+    groupId: ID!
+    mealPlanItems: [MealPlanItem]
+    createdAt: String
+    updatedAt: String
+  }
 
 
     type Query {
@@ -66,6 +142,11 @@ type UserTasksResponse {
   getRedeemedRewards: [Reward!]!
   getUserRewardList: [Reward!]! # Correctly defined as returning an array of non-nullable Reward types
   myProfile:User
+  getMeals(mealStyle: String, cuisine: String, title: String, ingredients: [String]): MealsByCuisine
+    getRecipeById(id: Int!): Recipe
+    getRecipeByName(title: String!): [Recipe]
+    getMealPlanByGroup(groupId: ID!): MealPlan
+
   }
   
   type UserPoints {
@@ -104,6 +185,68 @@ input UpdatedTaskInput {
     type: String
 }
 
+
+#Define Recipe Inputs
+
+input StepInput {
+  number: Int
+  step: String
+}
+  
+  input RecipeInput {
+    id: Int
+    title: String
+    image: String
+    summary: String
+    readyInMinutes: String
+    healthScore: String
+    cuisines: [String]
+    servings: String
+    instructions: String
+    steps: [StepInput]
+    ingredients: [IngredientInput]
+  }
+
+# Define meal Inputs
+
+ input MealInput {
+    id: Int
+    title: String
+    usedIngredientCount: Int
+    missedIngredientCount: Int
+    missedIngredients: [IngredientInput]
+    usedIngredients: [IngredientInput]
+    unusedIngredients: [IngredientInput]
+    likes: Int
+    image: String
+    imageType: String
+  }
+
+  input IngredientInput {
+    id: Int
+    amount: Float
+    unit: String
+    unitLong: String
+    unitShort: String
+    aisle: String
+    name: String
+    original: String
+    originalName: String
+    meta: [String]
+    extendedName: String
+    image: String
+  }
+
+   input MealPlanItemInput {
+    date: String
+    mealId: String
+    mealTitle: String
+    mealType: String
+    image: String
+    servings: Int
+  }
+
+
 # Define the UpdatedRewardInput type for editing rewards
 input UpdatedRewardInput {
   name: String
@@ -126,6 +269,14 @@ input UpdatedRewardInput {
     redeemReward(rewardId: ID!): Reward
     completeTask(taskId: ID!) :Task
     googleSignIn(username: String!, email:String!,googleId:ID!) :User
+
+       addMeal(mealStyle: String!, cuisine: String!, meal: MealInput!): MealsByCuisine
+    deleteMeal(mealStyle: String!, cuisine: String!, mealId: Int!): MealsByCuisine
+    addRecipe(recipe: RecipeInput!): Recipe
+    updateRecipe(id: Int!, recipe: RecipeInput!): Recipe
+    deleteRecipe(id: Int!): String
+    saveMealPlan(groupId: ID!, mealPlanItems: [MealPlanItemInput]!): MealPlan
+
   }
 `;  
 
@@ -135,15 +286,17 @@ const resolvers = {
     ...userResolver.Query,      // Merge user-related queries
     ...taskResolver.Query,   
     ...groupResolver.Query,  // Merge task-related queries
-    ...rewardResolver.Query
-    
+    ...rewardResolver.Query,
+     ...mealResolver.Query,
+     ...recipeResolver.Query,
   },
   Mutation: {
     ...userResolver.Mutation,   // Merge user-related mutations
     ...taskResolver.Mutation,    // Merge task-related mutations
     ...groupResolver.Mutation,  // Merge group-related mutations
-    ...rewardResolver.Mutation
-
+    ...rewardResolver.Mutation,
+    ...mealResolver.Mutation,
+    ...recipeResolver.Mutation,
   },
 };
 

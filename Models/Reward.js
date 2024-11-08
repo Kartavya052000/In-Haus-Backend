@@ -16,6 +16,7 @@ const rewardSchema = new mongoose.Schema({
   assignedTo: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
+
     required: true,
   },
   category: {
@@ -25,6 +26,7 @@ const rewardSchema = new mongoose.Schema({
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
+
     required: true,
   },
   redeemed: {
@@ -44,6 +46,7 @@ rewardSchema.pre('save', function (next) {
     this.redeemedOn = new Date();
   }
   next();
+
 });
 
 const Reward = mongoose.model('Reward', rewardSchema);

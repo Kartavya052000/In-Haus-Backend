@@ -106,7 +106,10 @@ console.log(user)
     username: user.username,
     email: user.email,
     points: user.points || 0,
+
     token,
+    groups:user.groups,
+    points:user.points
   };
 };
 
