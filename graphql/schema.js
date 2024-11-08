@@ -65,7 +65,7 @@ type UserTasksResponse {
   getReward(rewardId: ID!): Reward
   getRedeemedRewards: [Reward!]!
   getUserRewardList: [Reward!]! # Correctly defined as returning an array of non-nullable Reward types
-  
+  myProfile:User
   }
   
   type UserPoints {
@@ -125,6 +125,7 @@ input UpdatedRewardInput {
     testMutation: String
     redeemReward(rewardId: ID!): Reward
     completeTask(taskId: ID!) :Task
+    googleSignIn(username: String!, email:String!,googleId:ID!) :User
   }
 `;  
 

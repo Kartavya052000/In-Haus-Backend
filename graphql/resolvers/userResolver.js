@@ -4,7 +4,7 @@ const userResolver = {
   Mutation: {
     signup: (_, args) => userController.signup(args),
     login: (_, args) => userController.login(args),
-
+    googleSignIn:(_,args) => userController.googleSignIn(args),
     forgotPassword: async (_, { email }) => {
       return await userController.forgotPassword(email);
     },
@@ -29,6 +29,23 @@ const userResolver = {
     //   // Pass the userId to the getProfile function
     //   return await userController.getProfile(user.userId);  
     // },
+    myProfile: async (_, {  },context) => {
+      const user = context.user; // Get the authenticated user from context
+console.log(user,"user");
+      if (!user || !user.userId) {
+        throw new Error("Unauthorized! You must be logged in to access this information.");
+      }
+
+      try {
+        const userProfile = await userController.myProfile(user.userId); // Assuming _id is the user’s ID
+        if (!userProfile) {
+          throw new Error('User not found');
+        }
+        return userProfile;
+      } catch (error) {
+        throw new Error('Failed to fetch profile: ' + error.message);
+      }
+    },
   },
 };
 

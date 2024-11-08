@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const nodemailer = require("nodemailer");
+const { log } = require("console");
 
 
 // SignUp Function
@@ -14,7 +15,7 @@ exports.signup = async ({ username, email, password }) => {
   }
 
   // Create new user
-  const newUser = new User({ username, email, password });
+  const newUser = new User({ username, email, password,provider:"local" });
   await newUser.save();
 
   const secretKey = process.env.JWT_SECRET;
@@ -72,6 +73,40 @@ exports.login = async ({ email, password }) => {
     token,
     groups:user.groups,
     points:user.points
+  };
+};
+
+//Google LogIn
+exports.googleSignIn = async ({ username, email,googleId }) => {
+  // Check if user exists, if not create one
+  let user = await User.findOneAndUpdate(
+    { email },
+    { $setOnInsert: { username, googleId, provider: "google", points: 0 } },
+    { upsert: true, new: true, setDefaultsOnInsert: true }
+  ).exec();
+console.log(user)
+  if (!user) {
+    // In case the user creation fails
+    throw new Error("Failed to create or retrieve user.");
+  }
+
+  const secretKey = process.env.JWT_SECRET;
+
+  if (!secretKey) {
+    throw new Error("JWT secret is not defined.");
+  }
+
+  // Generate JWT token
+  const token = jwt.sign({ userId: user._id }, secretKey, {
+    expiresIn: "1d",
+  });
+
+  return {
+    id: user._id,
+    username: user.username,
+    email: user.email,
+    points: user.points || 0,
+    token,
   };
 };
 
@@ -170,4 +205,28 @@ exports.resetPassword = async (resetToken, newPassword) => {
   return {
     message: 'Password has been updated successfully'
   };
+};
+
+
+
+// My Profile
+
+exports.myProfile = async (userId) => {
+  try {
+    const user = await User.findById(userId);
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    return {
+      id: user._id.toString(),
+      username: user.username,
+      email: user.email,
+      points: user.points,
+    };
+  } catch (error) {
+    console.error('Error fetching profile for user:', error);
+    throw new Error('Failed to fetch profile: ' + error.message);
+  }
 };
