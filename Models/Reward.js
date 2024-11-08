@@ -15,7 +15,8 @@ const rewardSchema = new mongoose.Schema({
   },
   assignedTo: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User', // Ensure this references the User model
+    ref: 'User',
+
     required: true,
   },
   category: {
@@ -24,14 +25,28 @@ const rewardSchema = new mongoose.Schema({
   },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User', // Ensure this references the User model
+    ref: 'User',
+
     required: true,
   },
   redeemed: {
     type: Boolean,
-    default: false, // Set default to false if it hasn't been redeemed yet
+    default: false,
     required: true,
+  },
+  redeemedOn: {
+    type: Date,
+    default: null, // Set to null initially
   }
+});
+
+// Middleware to update `redeemedOn` when `redeemed` is set to true
+rewardSchema.pre('save', function (next) {
+  if (this.redeemed && !this.redeemedOn) {
+    this.redeemedOn = new Date();
+  }
+  next();
+
 });
 
 const Reward = mongoose.model('Reward', rewardSchema);

@@ -9,20 +9,41 @@ const userSchema = new Schema(
     username: {
       type: String,
       required: true,
-      unique: true,
+      // unique: true,
     },
     email: {
       type: String,
       required: true,
-      unique: true,
+      unique: function () {
+        return this.provider === "local"; // Only required for local users
+      },
     },
     password: {
       type: String,
-      required: true,
+      required: function () {
+        return this.provider === "local"; // Only required for local users
+      },
     },
     points: {
       type: Number,
       default: 0,  // Default points value is 0
+    },
+    provider: {
+      type: String,
+      enum: ["local", "google"],
+      default:'local',
+      required: true,
+    },
+    googleId: {
+      type: String,
+      unique: function () {
+        return this.provider === "google"; // Set unique based on the provider
+      },
+      sparse: true, // Allow multiple null values
+      required: function () {
+        return this.provider === "google"; // Require for 'google' provider
+      }
+
     },
     // redeemedRewards: [{
     //   rewardId: { type: Schema.Types.ObjectId, ref: 'Reward' },

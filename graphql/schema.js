@@ -3,8 +3,10 @@ const userResolver = require('./resolvers/userResolver');
 const taskResolver = require('./resolvers/taskResolver');
 const groupResolver = require('./resolvers/groupResolver');
 const rewardResolver = require('./resolvers/rewardResolver');
+
 const mealResolver = require('./resolvers/mealResolver');
 const recipeResolver = require('./resolvers/recipeResolver');
+
 
 // Define all types including User and Task-related ones
 const typeDefs = `
@@ -129,6 +131,7 @@ type MealPlanItem {
     updatedAt: String
   }
 
+
     type Query {
     hello: String!  # Add hello query here
    getGroup(groupId: ID): Group  # Query to get a group by its ID
@@ -138,10 +141,12 @@ type MealPlanItem {
   getReward(rewardId: ID!): Reward
   getRedeemedRewards: [Reward!]!
   getUserRewardList: [Reward!]! # Correctly defined as returning an array of non-nullable Reward types
- getMeals(mealStyle: String, cuisine: String, title: String, ingredients: [String]): MealsByCuisine
+  myProfile:User
+  getMeals(mealStyle: String, cuisine: String, title: String, ingredients: [String]): MealsByCuisine
     getRecipeById(id: Int!): Recipe
     getRecipeByName(title: String!): [Recipe]
     getMealPlanByGroup(groupId: ID!): MealPlan
+
   }
   
   type UserPoints {
@@ -179,6 +184,7 @@ input UpdatedTaskInput {
     points: Int
     type: String
 }
+
 
 #Define Recipe Inputs
 
@@ -240,6 +246,7 @@ input StepInput {
     servings: Int
   }
 
+
 # Define the UpdatedRewardInput type for editing rewards
 input UpdatedRewardInput {
   name: String
@@ -261,12 +268,15 @@ input UpdatedRewardInput {
     testMutation: String
     redeemReward(rewardId: ID!): Reward
     completeTask(taskId: ID!) :Task
+    googleSignIn(username: String!, email:String!,googleId:ID!) :User
+
        addMeal(mealStyle: String!, cuisine: String!, meal: MealInput!): MealsByCuisine
     deleteMeal(mealStyle: String!, cuisine: String!, mealId: Int!): MealsByCuisine
     addRecipe(recipe: RecipeInput!): Recipe
     updateRecipe(id: Int!, recipe: RecipeInput!): Recipe
     deleteRecipe(id: Int!): String
     saveMealPlan(groupId: ID!, mealPlanItems: [MealPlanItemInput]!): MealPlan
+
   }
 `;  
 
@@ -279,7 +289,6 @@ const resolvers = {
     ...rewardResolver.Query,
      ...mealResolver.Query,
      ...recipeResolver.Query,
-    
   },
   Mutation: {
     ...userResolver.Mutation,   // Merge user-related mutations
@@ -288,7 +297,6 @@ const resolvers = {
     ...rewardResolver.Mutation,
     ...mealResolver.Mutation,
     ...recipeResolver.Mutation,
-
   },
 };
 
