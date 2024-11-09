@@ -34,15 +34,15 @@ const groupResolver = {
   Query: {
     hello: () => 'Hello world!',
     
-    getGroup: async (_, {  },context) => {
+    getGroup: async (_,args,context) => {
       const user = context.user; // Get the authenticated user from context
-console.log(user,"user");
+// console.log(user,"usereeeeeee");
 if (!user || !user.userId) {
   throw new Error("Unauthorized! You must be logged in to get a group.");
 }
         try {
           // const user 
-          const group = await groupController.findGroupById(user.userId);
+          const group = await groupController.findGroupById(user.userId,args);
           if (!group) {
             throw new Error('Group not found');
           }
@@ -51,7 +51,7 @@ if (!user || !user.userId) {
           throw new Error(error.message);
         }
       },
-      getUserTasksInGroup: async (_, { groupId,userId }, context) => {
+      getUserTasksInGroup: async (_, { groupId,userId,startDate }, context) => {
         // Retrieve userId from context
         // Debugging userId
         
@@ -68,7 +68,7 @@ if (!user || !user.userId) {
         }
       
         // Fetch tasks assigned to the user in the specified group
-        const tasks = await groupController.getUserTasksInGroup(groupId, userId);
+        const tasks = await groupController.getUserTasksInGroup(groupId, userId,startDate);
       
         // Find the user object for the given userId from the group members
         const user = group.members.find(member => member.id === userId);
@@ -85,6 +85,8 @@ if (!user || !user.userId) {
             taskName: task.taskName,
             startDate: task.startDate,
             endDate: task.endDate,
+            points:task.points,
+            category: task.category,
             assignedTo: {
               id: task.assignedTo.id.toString(),
               // username: task.assignedTo.username, // Uncomment if needed
@@ -92,6 +94,49 @@ if (!user || !user.userId) {
           })),
         };
       },
+      getMyTasksInGroup:async(_,{},context) => {
+        const User = context.user; // Get the authenticated user from context
+        console.log(User,"user");
+        if (!User || !User.userId) {
+          throw new Error("Unauthorized! You must be logged in to get a group.");
+        }
+        const group = await groupController.findGroupById(User.userId);
+        if (!group) {
+          throw new Error('Group not found');
+        }
+         // Check if the user is a member of the group
+         const isMember = group.members.some(member => member.id === User.userId);
+         if (!isMember) {
+           throw new Error('User is not a member of this group');
+         }
+
+               
+        // Fetch tasks assigned to the user in the specified group
+        const tasks = await groupController.getMyUserTasksInGroup(User.userId);
+           // Find the user object for the given userId from the group members
+           const user = group.members.find(member => member.id === User.userId);
+           if (!user) {
+             throw new Error('User not found in the group');
+           }
+         
+           // Return only the user details and their tasks
+           return {
+             id: User.userId,
+             username: user.username, // Get username directly from the user object
+             filteredTasks: tasks.filteredTasks.map(task => ({
+               id: task.id.toString(),
+               taskName: task.taskName,
+               startDate: task.startDate,
+               endDate: task.endDate,
+               points:task.points,
+               category: task.category,
+               assignedTo: {
+                 id: task.assignedTo.id.toString(),
+                 // username: task.assignedTo.username, // Uncomment if needed
+               },
+             })),
+           };
+      }
       
         
   },

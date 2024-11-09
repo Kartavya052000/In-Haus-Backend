@@ -14,6 +14,7 @@ const taskController = {
         points: taskDetails.points,
         type: taskDetails.type,
         createdBy: taskDetails.createdBy,
+        category: taskDetails.category
       });
 
       const savedTask = await newTask.save();

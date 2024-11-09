@@ -28,6 +28,7 @@ const typeDefs = `
     assignedTo: User!  # This references the User type
     points: Int
     type: String
+    category:String
     createdBy: User!   # This also references the User type
   }
 
@@ -37,6 +38,7 @@ type Group {
   members: [User!]!  # List of Users who are members of the group
   createdAt: String!
   updatedAt: String!
+  startDate: String
     createdBy: User!   # This also references the User type
   filteredTasks: [Task!]!  # Ensure this is included in the Group type
 }
@@ -56,6 +58,7 @@ type Reward {
 type UserTasksResponse {
   id: ID!
   username: String!
+  startDate:String
   filteredTasks: [Task!]!  # List of tasks assigned to the user
 }
 
@@ -135,8 +138,9 @@ type MealPlanItem {
 
     type Query {
     hello: String!  # Add hello query here
-   getGroup(groupId: ID): Group  # Query to get a group by its ID
-  getUserTasksInGroup(groupId: ID!,userId: ID!): UserTasksResponse  # Correct response type
+   getGroup(groupId: ID,startDate:String): Group  # Query to get a group by its ID
+  getUserTasksInGroup(groupId: ID!,userId: ID!,startDate:String): UserTasksResponse  # Correct response type
+  getMyTasksInGroup:UserTasksResponse
   getTask(taskId: ID!) : Task
   getPoints(userId: ID!): UserPoints
   getReward(rewardId: ID!): Reward
@@ -261,7 +265,7 @@ input UpdatedRewardInput {
     login(email: String!, password: String!): User
     forgotPassword(email: String!): ResponseMessage  
     resetPassword(resetToken: String!, newPassword: String!): ResponseMessage  
-    createTask(taskName: String!, startDate: String!,endDate: String!, repeat: String, assignedTo: ID!, points: Int,description:String, type: String!): Task
+    createTask(taskName: String!, startDate: String!,endDate: String!, repeat: String, assignedTo: ID!, points: Int,description:String, type: String!,category : String!): Task
    createGroup(groupName: String!, members: [ID!]!): Group  # Define createGroup mutation
     editTask(taskId: ID!, updatedTaskDetails: UpdatedTaskInput!): Task  # Define editTask mutation
     createReward(name: String!, pointsAssigned: Int!, expiryDate: String!,assignedTo:ID! category: String!): Reward 
