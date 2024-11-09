@@ -5,6 +5,7 @@ const groupResolver = require('./resolvers/groupResolver');
 const rewardResolver = require('./resolvers/rewardResolver');
 
 const mealResolver = require('./resolvers/mealResolver');
+const mealPlanResolver = require('./resolvers/mealPlanResolver');
 const recipeResolver = require('./resolvers/recipeResolver');
 
 
@@ -145,7 +146,7 @@ type MealPlanItem {
   getMeals(mealStyle: String, cuisine: String, title: String, ingredients: [String]): MealsByCuisine
     getRecipeById(id: Int!): Recipe
     getRecipeByName(title: String!): [Recipe]
-    getMealPlanByGroup(groupId: ID!): MealPlan
+    getMealPlanByGroup: MealPlan
 
   }
   
@@ -275,7 +276,9 @@ input UpdatedRewardInput {
     addRecipe(recipe: RecipeInput!): Recipe
     updateRecipe(id: Int!, recipe: RecipeInput!): Recipe
     deleteRecipe(id: Int!): String
-    saveMealPlan(groupId: ID!, mealPlanItems: [MealPlanItemInput]!): MealPlan
+    saveMealPlan(mealPlanItems: [MealPlanItemInput]!): MealPlan
+     deleteMealsFromMealPlan(groupId: ID!, mealIds: [String!]!, dates: [String!]!, mealTypes: [String!]!): MealPlan
+  deleteMealPlan(groupId: ID!): ResponseMessage
 
   }
 `;  
@@ -289,6 +292,7 @@ const resolvers = {
     ...rewardResolver.Query,
      ...mealResolver.Query,
      ...recipeResolver.Query,
+     ...mealPlanResolver.Query,
   },
   Mutation: {
     ...userResolver.Mutation,   // Merge user-related mutations
@@ -297,6 +301,7 @@ const resolvers = {
     ...rewardResolver.Mutation,
     ...mealResolver.Mutation,
     ...recipeResolver.Mutation,
+    ...mealPlanResolver.Mutation,
   },
 };
 
