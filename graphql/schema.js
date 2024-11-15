@@ -281,7 +281,7 @@ input UpdatedRewardInput {
     updateRecipe(id: Int!, recipe: RecipeInput!): Recipe
     deleteRecipe(id: Int!): String
     saveMealPlan(mealPlanItems: [MealPlanItemInput]!): MealPlan
-     deleteMealsFromMealPlan(groupId: ID!, mealIds: [String!]!, dates: [String!]!, mealTypes: [String!]!): MealPlan
+     deleteMealsFromMealPlan(mealIds: [String!]!, dates: [String!]!, mealTypes: [String!]!): MealPlan
   deleteMealPlan(groupId: ID!): ResponseMessage
 
   }
