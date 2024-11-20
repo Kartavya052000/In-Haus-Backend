@@ -35,10 +35,11 @@ const typeDefs = `
 type Group {
   id: ID!
   groupName: String!
-  members: [User!]!  # List of Users who are members of the group
+  members: [User!]  # List of Users who are members of the group
   createdAt: String!
   updatedAt: String!
   startDate: String
+  email: String
     createdBy: User!   # This also references the User type
   filteredTasks: [Task!]!  # Ensure this is included in the Group type
 }
@@ -266,7 +267,7 @@ input UpdatedRewardInput {
     forgotPassword(email: String!): ResponseMessage  
     resetPassword(resetToken: String!, newPassword: String!): ResponseMessage  
     createTask(taskName: String!, startDate: String!,endDate: String!, repeat: String, assignedTo: ID!, points: Int,description:String, type: String!,category : String!): Task
-   createGroup(groupName: String!, members: [ID!]!): Group  # Define createGroup mutation
+   createGroup(groupName: String!, email:String!): Group  # Define createGroup mutation
     editTask(taskId: ID!, updatedTaskDetails: UpdatedTaskInput!): Task  # Define editTask mutation
     createReward(name: String!, pointsAssigned: Int!, expiryDate: String!,assignedTo:ID! category: String!): Reward 
     editReward(rewardId: ID!, updatedRewardDetails: UpdatedRewardInput!): Reward  # Mutation to edit a reward

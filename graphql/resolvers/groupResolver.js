@@ -1,4 +1,5 @@
 const groupController = require('../../Controllers/groupController'); // Adjust the path as necessary
+const User = require('../../Models/User');
 
 const groupResolver = {
   Mutation: {
@@ -11,12 +12,14 @@ const groupResolver = {
       }
 
       // Extract the groupName and members from args
-      const { groupName, members } = args;
-
+      const { groupName, email } = args;
+      const getUser = await User.findOne({ email })
+      // console.log(getUser._id.toString())
+      // return
       // Create the group data object
       const groupData = {
         groupName,
-        members: [...members, user.userId], // Include the creator in the members list
+        members: [getUser._id.toString(), user.userId], // Include the creator in the members list
         createdBy: user.userId, // Use the authenticated user's ID
       };
 
