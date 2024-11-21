@@ -33,6 +33,8 @@ const io = new Server(server, {
   cors: {
     origin: "*", // Replace with your frontend domain in production
     methods: ['GET', 'POST'],
+    allowedHeaders: ["Content-Type"],
+    credentials: true,
   },
 });
 // Database Connection
