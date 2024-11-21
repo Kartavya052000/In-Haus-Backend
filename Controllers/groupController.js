@@ -51,7 +51,7 @@ if (!createdByUser) {
         console.log(data)
         try {
       const user = await User.findById(userId);
-      console.log(user,"UUUU")
+      // console.log(user,"UUUU")
           const group = await Group.findById(user.groups[0]).populate('members', 'id username');
           if (!group) {
             throw new Error('Group not found');

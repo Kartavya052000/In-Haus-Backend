@@ -4,7 +4,7 @@ const User = require("../Models/User"); // Import User model
 const rewardController = {
   // Create a reward
   createReward: async (rewardDetails) => {
-    console.log(rewardDetails);
+    // console.log(rewardDetails);
     try {
       const newReward = new Reward({
         name: rewardDetails.name,
@@ -20,7 +20,7 @@ const rewardController = {
       // Populate createdBy with user details
       const assignedUser = await User.findById(rewardDetails.assignedTo).select('id username');
       const createdByUser = await User.findById(savedReward.createdBy).select('id username');
-console.log(assignedUser,"assigned")
+// console.log(assignedUser,"assigned")
       // Format the expiry date
       const formattedExpiryDate = new Date(savedReward.expiryDate).toISOString();
 
