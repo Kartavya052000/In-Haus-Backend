@@ -29,8 +29,10 @@ const rewardResolver = {
         if (!rewards || rewards.length === 0) {
           return []; // Return an empty array if no rewards found
         }
+        const reversedRewards = rewards.reverse();
+
     // return rewards
-        return rewards.map(reward => {
+        return reversedRewards.map(reward => {
           // Debugging: Check each reward object before returning
           console.log(reward, "Current reward object.");
     
