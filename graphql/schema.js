@@ -7,6 +7,7 @@ const rewardResolver = require('./resolvers/rewardResolver');
 const mealResolver = require('./resolvers/mealResolver');
 const mealPlanResolver = require('./resolvers/mealPlanResolver');
 const recipeResolver = require('./resolvers/recipeResolver');
+const shoppingListResolver = require('./resolvers/shoppingListResolver');
 
 
 // Define all types including User and Task-related ones
@@ -83,6 +84,8 @@ type Recipe {
     ingredients: [Ingredient]
   }
 
+
+
  type Ingredient {
     id: Int
     amount: Float
@@ -152,6 +155,7 @@ type MealPlanItem {
     getRecipeById(id: Int!): Recipe
     getRecipeByName(title: String!): [Recipe]
     getMealPlanByGroup: MealPlan
+   getShoppingLists: [ShoppingList!]!
 
   }
   
@@ -172,6 +176,29 @@ type MealPlanItem {
     redeemedAt: String!
   }
   
+  type ShoppingListResponse {
+  groupId: ID!
+  shoppingListItems: [ShoppingList!]!
+}
+
+type ShoppingListIngredient {
+  id: String
+  uniqueKey: String
+  name: String
+  amount: Float
+  unit: String
+  checked: Boolean
+}
+
+type ShoppingList {
+  groupId: ID!
+  mealId: String
+  uniqueKey: String
+  mealTitle: String
+  mealImage: String
+  ingredients: [ShoppingListIngredient]
+}
+
   
   type RedeemRewardResponse {
     message: String!
@@ -198,7 +225,7 @@ input StepInput {
   number: Int
   step: String
 }
-  
+    
   input RecipeInput {
     id: Int
     title: String
@@ -243,6 +270,24 @@ input StepInput {
     image: String
   }
 
+  input ShoppingListIngredientInput {
+  id: String
+  uniqueKey: String
+  name: String
+  amount: Float
+  unit: String
+  checked: Boolean
+}
+
+
+  input ShoppingListInput {
+  mealId: String
+  uniqueKey: String
+  mealTitle: String
+  mealImage: String
+  ingredients: [ShoppingListIngredientInput]
+}
+
    input MealPlanItemInput {
     date: String
     mealId: String
@@ -285,6 +330,10 @@ input UpdatedRewardInput {
      deleteMealsFromMealPlan(mealIds: [String!]!, dates: [String!]!, mealTypes: [String!]!): MealPlan
   deleteMealPlan(groupId: ID!): ResponseMessage
 
+    addShoppingList(groupId: ID!, shoppingList: ShoppingListInput!): ShoppingList
+  editShoppingList(shoppingListId: ID!, shoppingList: ShoppingListInput!): ShoppingList
+  deleteShoppingList(shoppingListId: ID!): String
+   saveShoppingList(shoppingListItems: [ShoppingListInput]!): ShoppingListResponse
   }
 `;  
 
@@ -298,6 +347,7 @@ const resolvers = {
      ...mealResolver.Query,
      ...recipeResolver.Query,
      ...mealPlanResolver.Query,
+     ...shoppingListResolver.Query, // Add shopping list queries
   },
   Mutation: {
     ...userResolver.Mutation,   // Merge user-related mutations
@@ -307,6 +357,7 @@ const resolvers = {
     ...mealResolver.Mutation,
     ...recipeResolver.Mutation,
     ...mealPlanResolver.Mutation,
+    ...shoppingListResolver.Mutation, // Add shopping list mutations
   },
 };
 
