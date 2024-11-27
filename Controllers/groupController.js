@@ -56,23 +56,24 @@ if (!createdByUser) {
           if (!group) {
             throw new Error('Group not found');
           }
-      
+      console.log(group,"KKK");
           // console.log("Group found:", group);
       
           // Step 2: Extract the createdBy (group admin)
           const groupAdminId = group.createdBy;
-          let tasksQuery = { createdBy: groupAdminId };
+          let tasksQuery = { createdBy: groupAdminId,    taskStatus: "in_progress",  // Only get tasks that are in progress
+          };
 
           // If startDate is provided, filter tasks based on that date
-          if (data?.startDate) {
-            const startOfDay = new Date(data.startDate);
-            startOfDay.setUTCHours(0, 0, 0, 0);
+          // if (data?.startDate) {
+          //   const startOfDay = new Date(data.startDate);
+          //   startOfDay.setUTCHours(0, 0, 0, 0);
       
-            const endOfDay = new Date(data.startDate);
-            endOfDay.setUTCHours(23, 59, 59, 999);
+          //   const endOfDay = new Date(data.startDate);
+          //   endOfDay.setUTCHours(23, 59, 59, 999);
       
-            tasksQuery.startDate = { $gte: startOfDay, $lte: endOfDay };
-          }
+          //   tasksQuery.startDate = { $gte: startOfDay, $lte: endOfDay };
+          // }
           // Step 3: Fetch tasks that were created by this group admin
           // const tasks = await Task.find({ createdBy: groupAdminId }).populate('assignedTo', 'id username');
           const tasks = await Task.find(tasksQuery).populate('assignedTo', 'id username');
@@ -122,27 +123,29 @@ if (!createdByUser) {
         if (!isMember) {
           throw new Error('User is not a member of this group');
         }
+// console.log(isMember,"AAAAA")
+        console.log(userId,"===",group.createdBy.toString())
         // Define the base query for tasks
   const taskQuery = {
     assignedTo: userId,
-    createdBy: group.createdBy, // Optional: ensure the task was created in the group
+    createdBy: group.createdBy.toString(), // Optional: ensure the task was created in the group
     taskStatus: "in_progress",  // Only get tasks that are in progress
   };
 
   // If a startDate is provided, add it to the query as a range
-  if (startDate) {
-    const startOfDay = new Date(startDate);
-    startOfDay.setUTCHours(0, 0, 0, 0);
+  // if (startDate) {
+  //   const startOfDay = new Date(startDate);
+  //   startOfDay.setUTCHours(0, 0, 0, 0);
 
-    const endOfDay = new Date(startDate);
-    endOfDay.setUTCHours(23, 59, 59, 999);
+  //   const endOfDay = new Date(startDate);
+  //   endOfDay.setUTCHours(23, 59, 59, 999);
 
-    taskQuery.startDate = { $gte: startOfDay, $lte: endOfDay };
-  }
+  //   taskQuery.startDate = { $gte: startOfDay, $lte: endOfDay };
+  // }
         // Fetch tasks assigned to the user in the specified group with taskStatus "completed"
         const tasks = await Task.find(taskQuery).populate('assignedTo', 'id username');
-
-        console.log("Filtered Tasks:", tasks); // Log fetched tasks to verify filtering
+// const tasks = await Task.findMany(taskQuery)
+        // console.log("Filtered Taskss:", tasks); // Log fetched tasks to verify filtering
 
         // Return the user details and their tasks
         return {
@@ -177,14 +180,14 @@ if (!createdByUser) {
         if (!isMember) {
           throw new Error('User is not a member of this group');
         }
-      
+      console.log(userId , "=====",group.createdBy)
         // Fetch tasks assigned to the user in the specified group with taskStatus "completed"
         const tasks = await Task.find({
           assignedTo: userId,
           createdBy: group.createdBy, // Optional: ensure the task was created in the group
           taskStatus: "in_progress"     // Only get tasks that are completed
         });
-        console.log("Filtered Tasks:", tasks); // Log fetched tasks to verify filtering
+        console.log("Filtered Taskss:", tasks); // Log fetched tasks to verify filtering
 
         // Return the user details and their tasks
         return {

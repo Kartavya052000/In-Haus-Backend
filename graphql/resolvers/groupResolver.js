@@ -49,6 +49,7 @@ if (!user || !user.userId) {
           if (!group) {
             throw new Error('Group not found');
           }
+          console.log(group,"GGG")
           return group;
         } catch (error) {
           throw new Error(error.message);

@@ -21,7 +21,7 @@ app.use(bodyParser.json());
 // Define a route
 app.use(
     cors({
-      origin: true, // Allows all origins
+      origin: "*", // Allows all origins
       methods: ["GET", "POST", "PUT", "DELETE"],
       credentials: true, // Allows cookies and authentication info to be passed
     })
